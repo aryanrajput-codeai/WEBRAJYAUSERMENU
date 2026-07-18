@@ -1,23 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  Printer, 
-  Settings, 
-  Trash2, 
-  Play, 
-  Pause, 
-  FileText, 
-  Layers, 
-  History, 
-  BarChart, 
-  CheckCircle, 
-  AlertTriangle, 
-  Clock, 
-  ArrowDown, 
-  X, 
-  Copy, 
+import {
+  Printer,
+  Settings,
+  Trash2,
+  Play,
+  Pause,
+  FileText,
+  Layers,
+  History,
+  BarChart,
+  CheckCircle,
+  AlertTriangle,
+  Clock,
+  ArrowDown,
+  X,
+  Copy,
   Download,
   Activity,
   Award
+
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { KOT, PrinterEmulatorLog } from "../types";
@@ -34,7 +35,7 @@ export default function VirtualPrinterCenter() {
   const [isLoading, setIsLoading] = useState(true);
   const [printerStatus, setPrinterStatus] = useState<"online" | "idle" | "offline">("online");
   const [isAutoPrintActive, setIsAutoPrintActive] = useState(true);
-  
+
   // Modal State
   const [selectedLog, setSelectedLog] = useState<PrinterEmulatorLog | null>(null);
   const [previewWidth, setPreviewWidth] = useState<"58mm" | "80mm">("80mm");
@@ -43,7 +44,7 @@ export default function VirtualPrinterCenter() {
   const [isPrinting, setIsPrinting] = useState(false);
   const [currentPrintingText, setCurrentPrintingText] = useState("");
   const [currentPrintingKOTNumber, setCurrentPrintingKOTNumber] = useState("");
-  
+
   // Interactive queues
   const [queue, setQueue] = useState<Omit<PrinterEmulatorLog, "id" | "createdAt" | "receiptText">[]>([]);
 
@@ -119,7 +120,7 @@ export default function VirtualPrinterCenter() {
 
   // Generates thermal print receipt text
   const generateReceiptText = (kot: any) => {
-    const itemsText = Array.isArray(kot.items) 
+    const itemsText = Array.isArray(kot.items)
       ? kot.items.map((i: any) => `${i.quantity} x ${i.name}`).join("\n")
       : "No items recorded.";
 
@@ -276,7 +277,7 @@ Kitchen Copy
 
   return (
     <div className="space-y-6">
-      
+
       {/* Title block */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/60 p-6 rounded-3xl border border-stone-200/80 shadow-sm">
         <div className="space-y-1">
@@ -301,20 +302,19 @@ Kitchen Copy
 
       {/* Printer Status Panel Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        
+
         {/* Connection status card */}
         <div className="bg-white border border-stone-250/50 p-5 rounded-2xl shadow-xs space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-stone-100">
             <span className="text-[10px] tracking-wider uppercase font-extrabold text-stone-400 font-sans">Printer Node</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-              printerStatus === "online" ? "bg-emerald-50 text-emerald-700" :
-              printerStatus === "idle" ? "bg-amber-50 text-amber-700 animate-pulse" :
-              "bg-rose-50 text-rose-700"
-            }`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${printerStatus === "online" ? "bg-emerald-50 text-emerald-700" :
+                printerStatus === "idle" ? "bg-amber-50 text-amber-700 animate-pulse" :
+                  "bg-rose-50 text-rose-700"
+              }`}>
               {printerStatus === "online" ? "🟢 ONLINE" : printerStatus === "idle" ? "🟡 PRINTING" : "🔴 OFFLINE"}
             </span>
           </div>
-          
+
           <div className="space-y-1">
             <span className="text-2xl font-black font-sans text-stone-850">Emulator #1</span>
             <p className="text-[10px] text-stone-400 font-light">Subhash Nagar Main Kitchen Core (POS-80)</p>
@@ -323,9 +323,8 @@ Kitchen Copy
           <div className="flex gap-2">
             <button
               onClick={() => setPrinterStatus(prev => prev === "offline" ? "online" : "offline")}
-              className={`flex-1 py-1 px-2 border rounded-xl text-[10px] font-semibold transition cursor-pointer font-sans text-center ${
-                printerStatus === "offline" ? "bg-emerald-50 border-emerald-300 text-emerald-800" : "bg-rose-50 border-rose-300 text-rose-800"
-              }`}
+              className={`flex-1 py-1 px-2 border rounded-xl text-[10px] font-semibold transition cursor-pointer font-sans text-center ${printerStatus === "offline" ? "bg-emerald-50 border-emerald-300 text-emerald-800" : "bg-rose-50 border-rose-300 text-rose-800"
+                }`}
             >
               {printerStatus === "offline" ? "Set Online" : "Go Offline"}
             </button>
@@ -336,9 +335,8 @@ Kitchen Copy
         <div className="bg-white border border-stone-250/50 p-5 rounded-2xl shadow-xs space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-stone-100">
             <span className="text-[10px] tracking-wider uppercase font-extrabold text-stone-400 font-sans">Auto-Spoooler</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-              isAutoPrintActive ? "bg-indigo-50 text-indigo-700" : "bg-stone-50 text-stone-550"
-            }`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${isAutoPrintActive ? "bg-indigo-50 text-indigo-700" : "bg-stone-50 text-stone-550"
+              }`}>
               {isAutoPrintActive ? "ACTIVE" : "STANDBY"}
             </span>
           </div>
@@ -386,11 +384,11 @@ Kitchen Copy
 
       {/* Main Core Section: Interactive simulator & Queue management */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
+
         {/* Left: Thermal Printer Graphics simulator */}
         <div className="lg:col-span-6 space-y-6">
           <div className="bg-stone-900 border-4 border-stone-850 p-6 rounded-3xl shadow-2xl space-y-4">
-            
+
             {/* Realistic Printer Enclosure Header */}
             <div className="flex justify-between items-center text-white bg-stone-800/80 p-3 rounded-2xl border border-stone-700">
               <div className="flex items-center gap-2">
@@ -402,18 +400,17 @@ Kitchen Copy
 
             {/* Simulated Paper rollout viewport window */}
             <div className="bg-stone-800 p-5 rounded-2xl border border-stone-750 relative overflow-hidden flex flex-col items-center">
-              
+
               {/* Paper Roll Indicator (Moving/Slicing) */}
               <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-b from-stone-900 via-stone-800 to-transparent z-20 flex justify-center">
                 <div className="w-2/3 h-1 bg-indigo-500 rounded-b opacity-80 animate-pulse" />
               </div>
 
               {/* White receipt paper element */}
-              <div 
+              <div
                 ref={paperOutputRef}
-                className={`w-full max-w-sm h-96 overflow-y-auto bg-[#fffff8] border border-stone-300 rounded-lg p-5 font-mono text-[11px] text-stone-900 shadow-inner scroll-smooth ${
-                  isPrinting ? "animate-[pulse_1.5s_infinite]" : ""
-                }`}
+                className={`w-full max-w-sm h-96 overflow-y-auto bg-[#fffff8] border border-stone-300 rounded-lg p-5 font-mono text-[11px] text-stone-900 shadow-inner scroll-smooth ${isPrinting ? "animate-[pulse_1.5s_infinite]" : ""
+                  }`}
               >
                 {/* Jagged tear paper decoration top */}
                 <div className="border-b border-dotted border-stone-400 py-1 mb-3 text-center text-[10px] font-bold text-stone-400 uppercase tracking-widest">
@@ -431,7 +428,7 @@ Kitchen Copy
                     <p className="text-[10px] text-stone-400 max-w-xs leading-relaxed font-sans">Submit a new KOT from mobile menu or click 'Simulate KOT Print' up top to watch real-time compiler paper feed animation here.</p>
                   </div>
                 )}
-                
+
                 {/* Jagged tear paper decoration bottom */}
                 <div className="border-t border-dotted border-stone-400 py-1 mt-4 text-center text-[9px] text-stone-350">
                   --- EOF Paper Roll ---
@@ -446,7 +443,7 @@ Kitchen Copy
             {/* Controller interface buttons */}
             <div className="flex justify-between items-center text-xs text-stone-400 font-mono">
               <span>Feed Paper (Scrolls)</span>
-              <button 
+              <button
                 onClick={() => {
                   setCurrentPrintingText("");
                   setCurrentPrintingKOTNumber("");
@@ -462,13 +459,13 @@ Kitchen Copy
 
         {/* Right: Virtual Queue & Analytics block */}
         <div className="lg:col-span-6 space-y-6">
-          
+
           {/* Virtual Queue Panel */}
           <div className="bg-white border border-stone-250/50 p-5 rounded-3xl space-y-4">
             <h3 className="text-sm font-sans font-bold text-stone-900 uppercase tracking-wide flex items-center gap-2">
               <Layers className="w-4 h-4 text-indigo-600" /> Virtual Queue Panel
             </h3>
-            
+
             <div className="space-y-2">
               {queue.length === 0 ? (
                 <div className="py-6 border border-dashed border-stone-200 rounded-2xl text-center text-xs text-stone-400">
@@ -484,11 +481,10 @@ Kitchen Copy
                       <span className="font-bold text-stone-800">{qItem.kotNumber}</span>
                     </div>
 
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-sans font-bold ${
-                      qItem.printStatus === "Pending" ? "bg-amber-50 border border-amber-200 text-amber-700" :
-                      qItem.printStatus === "Printing" ? "bg-blue-50 border border-blue-200 text-blue-700 animate-pulse" :
-                      "bg-rose-50 border border-rose-200 text-rose-700"
-                    }`}>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-sans font-bold ${qItem.printStatus === "Pending" ? "bg-amber-50 border border-amber-200 text-amber-700" :
+                        qItem.printStatus === "Printing" ? "bg-blue-50 border border-blue-200 text-blue-700 animate-pulse" :
+                          "bg-rose-50 border border-rose-200 text-rose-700"
+                      }`}>
                       {qItem.printStatus}
                     </span>
                   </div>
@@ -511,14 +507,14 @@ Kitchen Copy
               {hourlyStats.map((hl, idx) => {
                 const maxCount = 25;
                 const pct = Math.min(100, (hl.count / maxCount) * 100);
-                
+
                 return (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 group relative">
                     <div className="absolute -top-6 bg-stone-900 text-white px-2 py-0.5 rounded text-[8px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       {hl.count} KOTs
                     </div>
                     <div className="w-full bg-slate-50 border border-slate-200 rounded-t-lg h-20 relative overflow-hidden flex items-end">
-                      <div 
+                      <div
                         className="w-full bg-gradient-to-t from-indigo-500 to-indigo-600 transition-all duration-700"
                         style={{ height: `${pct}%` }}
                       />
@@ -537,7 +533,7 @@ Kitchen Copy
 
       {/* Printer History table ledger */}
       <div className="bg-white border border-stone-250/50 p-6 rounded-3xl space-y-4">
-        
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-2">
           <div className="space-y-1">
             <h3 className="text-sm font-sans font-bold text-stone-900 uppercase tracking-wide flex items-center gap-2">
@@ -665,9 +661,8 @@ Kitchen Copy
                     <button
                       key={width}
                       onClick={() => setPreviewWidth(width)}
-                      className={`px-3 py-1 text-[10px] font-mono font-bold rounded-md transition cursor-pointer ${
-                        previewWidth === width ? "bg-white text-stone-900 border border-stone-250/20 shadow-xs" : "text-stone-500 hover:text-stone-850"
-                      }`}
+                      className={`px-3 py-1 text-[10px] font-mono font-bold rounded-md transition cursor-pointer ${previewWidth === width ? "bg-white text-stone-900 border border-stone-250/20 shadow-xs" : "text-stone-500 hover:text-stone-850"
+                        }`}
                     >
                       {width}
                     </button>
@@ -700,7 +695,7 @@ Kitchen Copy
 
               {/* Scrollable thermal paper preview wrap */}
               <div className="flex-1 overflow-y-auto px-4 py-6 bg-stone-50 border border-stone-200 rounded-2xl flex justify-center">
-                <div 
+                <div
                   className="bg-white p-5 border border-stone-300 shadow-md font-mono text-[11px] leading-relaxed relative flex flex-col select-text"
                   style={{ width: previewWidth === "58mm" ? "210px" : "280px" }}
                 >

@@ -1,5 +1,4 @@
 import { MenuItem, Review, KOT, KOTStatus, OrderItem, RestaurantTable, PrinterEmulatorLog, Category } from "../types";
-import { menuItems as defaultMenuItems, reviews as defaultReviews, categories as defaultCategories } from "../data";
 import { createClient } from "@supabase/supabase-js";
 import { getSessionRestaurantId } from "./restaurantSession";
 
@@ -118,161 +117,23 @@ export interface RestaurantSettings {
   googleMapsUrl: string;
 }
 
-// Generate premium mock orders spanning the last 30 days
-const generateMockOrders = (initialMenuItems: MenuItem[]): Order[] => {
-  const orders: Order[] = [];
-  const names = [
-    "Aarav Sharma", "Sneha Patel", "Vikas Rajput", "Rohan Verma", "Ananya Iyer",
-    "Aditya Rao", "Pooja Hegde", "Kabir Mehra", "Meera Nair", "Rahul Singhania",
-    "Neha Gupta", "Amit Trivedi", "Siddharth Sen", "Deepa Joshi", "Karan Malhotra"
-  ];
-  const phones = [
-    "+91 98765 43210", "+91 91234 56789", "+91 88888 77777", "+91 99999 88888", "+91 98111 22233",
-    "+91 95400 11223", "+91 87654 32109", "+91 90123 45678", "+91 93123 93123", "+91 99887 76655",
-    "+91 88776 65544", "+91 77665 54433", "+91 96543 21098", "+91 92345 67890", "+91 93456 78901"
-  ];
-  const emails = names.map(n => n.toLowerCase().replace(" ", ".") + "@gmail.com");
-
-  const today = new Date();
-  
-  // Pick some items for diverse ordering
-  const getRandItems = () => {
-    const pool = initialMenuItems.slice(0, 15); // get some of the first pieces
-    const count = Math.floor(Math.random() * 3) + 1; // 1 to 3 items
-    const selected: typeof pool = [];
-    for (let i = 0; i < count; i++) {
-      const item = pool[Math.floor(Math.random() * pool.length)];
-      if (!selected.some(s => s.id === item.id)) {
-        selected.push(item);
-      }
-    }
-    return selected.map(item => ({
-      menuItemId: item.id,
-      name: item.name,
-      price: item.price,
-      quantity: Math.floor(Math.random() * 2) + 1,
-      customization: Math.random() > 0.7 ? "Less spicy, please" : undefined
-    }));
-  };
-
-  // Generate 25 orders distributed over the last 30 days
-  for (let i = 24; i >= 0; i--) {
-    const orderDate = new Date();
-    orderDate.setDate(today.getDate() - Math.floor(i * 1.2));
-    // randomize hour
-    orderDate.setHours(12 + Math.floor(Math.random() * 10), Math.floor(Math.random() * 60));
-
-    const items = getRandItems();
-    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const gst = Math.round(subtotal * 0.05);
-    const orderType = ["dine-in", "takeaway", "delivery"][Math.floor(Math.random() * 3)] as any;
-    const packagingCharge = orderType === "dine-in" ? 0 : 25;
-    
-    let discountAmount = 0;
-    let appliedCoupon: string | undefined;
-    if (Math.random() > 0.6) {
-      discountAmount = Math.round(subtotal * 0.1); // 10% coupon promo
-      appliedCoupon = "WEBRAJYA10";
-    }
-
-    const grandTotal = subtotal + gst + packagingCharge - discountAmount;
-    const statuses: Order["orderStatus"][] = ["New Order", "Accepted", "Preparing", "Ready", "Out For Delivery", "Delivered", "Cancelled"];
-    let orderStatus: Order["orderStatus"] = "Delivered"; 
-    
-    // If it's today's date, make some pending or preparing
-    if (i === 0) {
-      orderStatus = ["New Order", "Preparing", "Out For Delivery", "Delivered"][Math.floor(Math.random() * 4)] as any;
-    } else if (i === 1) {
-      orderStatus = Math.random() > 0.8 ? "Cancelled" : "Delivered";
-    }
-
-    const paymentStatus: Order["paymentStatus"] = orderStatus === "Cancelled" ? "Failed" : (orderStatus === "New Order" ? "Pending" : "Paid");
-
-    const tableNumber = orderType === "dine-in" ? String(Math.floor(Math.random() * 12) + 1) : undefined;
-    const address = orderType === "delivery" ? `${Math.floor(Math.random() * 200) + 1}, Sector-4, Dwarka, New Delhi` : undefined;
-
-    const uIdx = Math.floor(Math.random() * names.length);
-    orders.push({
-      id: `SR-${1000 + orders.length}`,
-      customerName: names[uIdx],
-      phoneNumber: phones[uIdx],
-      email: emails[uIdx],
-      orderType,
-      tableNumber,
-      address,
-      items,
-      subtotal,
-      gst,
-      packagingCharge,
-      discountAmount,
-      appliedCoupon,
-      grandTotal,
-      paymentStatus,
-      orderStatus,
-      createdAt: orderDate.toISOString()
-    });
-  }
-
-  return orders;
-};
-
-// Initial Stock setup
-const defaultInventory: InventoryItem[] = [
-  { id: "i1", name: "Premium Basmati Rice", stock: 120, unit: "kg", minAlertLevel: 30, category: "Dry Goods", lastRestocked: "2026-06-10" },
-  { id: "i2", name: "Fresh Paneer (Cottage Cheese)", stock: 8, unit: "kg", minAlertLevel: 15, category: "Dairy", lastRestocked: "2026-06-14" },
-  { id: "i3", name: "Fermented Dosa Batter", stock: 12, unit: "Litre", minAlertLevel: 20, category: "Dry Goods", lastRestocked: "2026-06-15" },
-  { id: "i4", name: "Potatoes (Sourced Red)", stock: 85, unit: "kg", minAlertLevel: 25, category: "Vegetables", lastRestocked: "2026-06-12" },
-  { id: "i5", name: "Red Tomatoes", stock: 10, unit: "kg", minAlertLevel: 20, category: "Vegetables", lastRestocked: "2026-06-14" },
-  { id: "i6", name: "Soya Chaap Skewers", stock: 45, unit: "units", minAlertLevel: 15, category: "Dry Goods", lastRestocked: "2026-06-12" },
-  { id: "i7", name: "Pure Cow Ghee", stock: 24, unit: "kg", minAlertLevel: 10, category: "Dairy", lastRestocked: "2026-06-11" },
-  { id: "i8", name: "Wholewheat Atta / Flour", stock: 150, unit: "kg", minAlertLevel: 40, category: "Dry Goods", lastRestocked: "2026-06-08" },
-  { id: "i9", name: "Mozzarella Grated Cheese", stock: 6, unit: "kg", minAlertLevel: 12, category: "Dairy", lastRestocked: "2026-06-13" },
-  { id: "i10", name: "Eco Packaging boxes", stock: 320, unit: "units", minAlertLevel: 100, category: "Packaging", lastRestocked: "2026-06-09" }
-];
-
-// Initial Coupons setup
-const defaultCoupons: Coupon[] = [
-  { code: "WEBRAJYA20", type: "percentage", value: 20, expiryDate: "2200-12-31", usageLimit: 500, usageCount: 0, minOrderAmount: 250 },
-  { code: "WELCOME50", type: "fixed", value: 50, expiryDate: "2200-06-30", usageLimit: 1000, usageCount: 0, minOrderAmount: 150 },
-  { code: "CHEFGIFT", type: "percentage", value: 15, expiryDate: "2026-08-31", usageLimit: 100, usageCount: 0, minOrderAmount: 300 }
-];
-
-// Initial default settings
+const defaultInventory: InventoryItem[] = [];
+const defaultCoupons: Coupon[] = [];
 const defaultSettings: RestaurantSettings = {
-  name: "WEBRAJYA POS",
-  contactNumber: "+91 92095 21933",
-  address: "Shop No. G-3, Shivpuja Apartment, Plot No. 50, Beside Trimurti Nagar Bus Stop, Mankapur Ring Road, Subhash Nagar, Trimurti Nagar, Nagpur, Maharashtra 440022",
-  businessHours: "Mon-Thu: 7:00 AM - 10:30 PM | Fri-Sat: 7:00 AM - 10:00 PM | Sun: 7:00 AM - 10:30 PM",
-  deliveryCharges: 25,
-  gstPercentage: 5,
-  facebookUrl: "https://facebook.com",
-  instagramUrl: "https://instagram.com/webrajya.pos",
-  twitterUrl: "https://twitter.com",
-  googleMapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.0772718136367!2d77.1082!3d28.6322!2m3!1f0!2f0!3f0!3m2!1i1248!2i786!4m2!3m1!1s0x0%3A0x0!2zMjgmdW5pcXVl!5e0!3m2!1sen!2sin!4v1680000000000!5m2!1sen!2sin"
+  name: "WebRajya POS",
+  contactNumber: "",
+  address: "",
+  businessHours: "",
+  deliveryCharges: 0,
+  gstPercentage: 0,
+  facebookUrl: "",
+  instagramUrl: "",
+  twitterUrl: "",
+  googleMapsUrl: ""
 };
-
-// Initial logs
-const defaultAuditLogs: AuditLog[] = [
-  { id: "log-1", timestamp: new Date().toISOString(), user: "Admin (owner)", action: "System Initialized", details: "Local database initialized clean. Ready for real orders.", ipAddress: "127.0.0.1" }
-];
-
-// Self-executing migration to clean up all old simulated/mock transactions and prefilled data
-if (typeof window !== "undefined") {
-  const ERASE_VERSION = "v3";
-  if (localStorage.getItem("ij_db_erased_version") !== ERASE_VERSION) {
-    // Erase all simulation history (orders, logs, and reviews) while preserving settings/menu catalogs
-    localStorage.setItem("ij_orders", JSON.stringify([]));
-    localStorage.setItem("ij_reviews", JSON.stringify([]));
-    localStorage.setItem("ij_audit_logs", JSON.stringify(defaultAuditLogs));
-    
-    // Wipe static cache items to re-initialize clean default settings/coupons/inventory
-    localStorage.removeItem("ij_coupons");
-    localStorage.removeItem("ij_settings");
-    localStorage.removeItem("ij_inventory");
-    
-    localStorage.setItem("ij_db_erased_version", ERASE_VERSION);
-  }
-}
+const defaultAuditLogs: AuditLog[] = [];
+const defaultCategories: Category[] = [];
+const defaultMenuItems: MenuItem[] = [];
 
 // Deterministic string-to-64bit-integer hash function to handle legacy/live bigint IDs safely within JS MAX_SAFE_INTEGER
 export function stringToNumericId(str: string): number {
@@ -394,18 +255,8 @@ export class LocalDB {
   static getTables(): RestaurantTable[] {
     const stored = localStorage.getItem("ij_tables");
     if (!stored) {
-      const defaultTables: RestaurantTable[] = [
-        { id: "tbl-1", tableNumber: "1", capacity: 4, seatingArea: "Main Dining Hall", status: "Available" },
-        { id: "tbl-2", tableNumber: "2", capacity: 4, seatingArea: "Main Dining Hall", status: "Available" },
-        { id: "tbl-3", tableNumber: "3", capacity: 2, seatingArea: "Window Alcove", status: "Available" },
-        { id: "tbl-4", tableNumber: "4", capacity: 6, seatingArea: "Family Suite", status: "Available" },
-        { id: "tbl-5", tableNumber: "5", capacity: 8, seatingArea: "VIP Lounge", status: "Reserved" },
-        { id: "tbl-6", tableNumber: "6", capacity: 2, seatingArea: "Balcony", status: "Available" },
-        { id: "tbl-7", tableNumber: "7", capacity: 4, seatingArea: "Courtyard Garden", status: "Available" },
-        { id: "tbl-8", tableNumber: "8", capacity: 4, seatingArea: "Courtyard Garden", status: "Available" }
-      ];
-      localStorage.setItem("ij_tables", JSON.stringify(defaultTables));
-      return defaultTables;
+      localStorage.setItem("ij_tables", JSON.stringify([]));
+      return [];
     }
     return JSON.parse(stored);
   }
@@ -911,8 +762,8 @@ export class LocalDB {
       if (!order.tableNumber) {
         throw new Error("Missing Table Number: Dine-In checkout requires a scanned table QR source.");
       }
-      const validTables = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-      if (!validTables.includes(order.tableNumber)) {
+      const registeredTables = this.getTables().map(t => t.tableNumber);
+      if (!registeredTables.includes(order.tableNumber)) {
         throw new Error(`Invalid QR Code Source: Table number #${order.tableNumber} is not registered in our dining area.`);
       }
 
