@@ -123,11 +123,19 @@ async function runAudit() {
 
   // Test that unauthorized email is rejected
   const unauthorizedEmail = "hacker@evil.com";
-  const isDemoAdmin =
-    unauthorizedEmail === "aiaryanrajput@gmail.com" ||
-    unauthorizedEmail === "admin@webrajya.com";
-  if (!isDemoAdmin) pass(`Unauthorized email "${unauthorizedEmail}" correctly rejected`);
-  else fail(`Unauthorized email "${unauthorizedEmail}" should be rejected`);
+
+  if (unauthorizedEmail) {
+    fail(`Unauthorized email "${unauthorizedEmail}" correctly rejected`);
+
+  }
+  else {
+    pass(`Unauthorized email "${unauthorizedEmail}" correctly rejected`);
+
+  }
+
+
+
+
 
   // Test password enforcement
   const validPasswords = ["admin123", "password123", "superadmin123"];
@@ -227,6 +235,7 @@ async function runAudit() {
       name: `${name} Main Branch`,
       status: "active",
       created_at: now,
+
     }]);
     if (error) fail(`Create branch for Restaurant ${name}`, error.message);
     else pass(`Restaurant ${name} default branch created`);

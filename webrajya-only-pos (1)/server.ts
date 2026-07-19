@@ -3,7 +3,7 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
-import { menuItems as defaultMenuItems, reviews as defaultReviews } from "./src/data";
+import { menuItems as defaultMenuItems, reviews as defaultReviews } from "./db-store.json";
 
 interface Order {
   id: string;
