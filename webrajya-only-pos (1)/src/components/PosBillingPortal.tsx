@@ -908,8 +908,8 @@ export default function PosBillingPortal({
               </div>
 
               {/* Order Type Toggle Selector */}
-              <div className="grid grid-cols-2 gap-1 bg-stone-200 p-0.5 rounded-xl border border-stone-250">
-                {(["takeaway", "delivery"] as const).map((type) => (
+              <div className="grid grid-cols-3 gap-1 bg-stone-200 p-0.5 rounded-xl border border-stone-250">
+                {(["dine-in", "takeaway", "delivery"] as const).map((type) => (
                   <button
                     key={type}
                     type="button"
@@ -923,7 +923,7 @@ export default function PosBillingPortal({
                         : "text-stone-500 hover:text-stone-850"
                     }`}
                   >
-                    {type === "takeaway" ? "Takeaway" : "Delivery"}
+                    {type === "dine-in" ? "Dine-In" : type === "takeaway" ? "Takeaway" : "Delivery"}
                   </button>
                 ))}
               </div>

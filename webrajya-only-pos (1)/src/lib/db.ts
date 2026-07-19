@@ -1099,11 +1099,6 @@ export class LocalDB {
   }
 
   static async apiSaveMenuItems(items: MenuItem[]): Promise<void> {
-    this.saveMenuItems(items);
-  }
-
-  static async legacyBypassedSaveMenuItems(items: MenuItem[]): Promise<void> {
-    const supabase: any = null;
     try {
       const supported = await this.detectSupportedColumns();
       console.log("[Supabase API] Supported columns on menu_items table detected:", supported);
