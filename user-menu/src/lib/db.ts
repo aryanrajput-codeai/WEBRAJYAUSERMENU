@@ -6,11 +6,11 @@ import { createClient } from "@supabase/supabase-js";
 const anyMeta = import.meta as any;
 const supabaseUrl = anyMeta.env?.VITE_SUPABASE_URL || 
                     anyMeta.env?.NEXT_PUBLIC_SUPABASE_URL || 
-                    "https://uhvxkulqovkasewxfais.supabase.co";
+                    "https://krvlckokabfhivmegukb.supabase.co";
 
 const supabaseKey = anyMeta.env?.VITE_SUPABASE_ANON_KEY || 
                     anyMeta.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
-                    "sb_publishable_935p_1HOmvJr1p9dhFlb2g_zMA957jI";
+                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtydmxja29rYWJmaGl2bWVndWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODkyODcsImV4cCI6MjA5OTg2NTI4N30.-wl0k_-Iq_WjQUPKi35ttuuY5ybsQdvGVbDH42RGQv4";
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 

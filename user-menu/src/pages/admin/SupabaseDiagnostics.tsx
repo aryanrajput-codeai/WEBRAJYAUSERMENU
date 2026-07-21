@@ -558,8 +558,8 @@ CREATE TRIGGER trg_audit_settlements
         try {
           const start = performance.now();
           const anyMeta = import.meta as any;
-          const res = await fetch("https://uhvxkulqovkasewxfais.supabase.co/rest/v1/", {
-            headers: { apikey: anyMeta.env?.VITE_SUPABASE_ANON_KEY || "sb_publishable_935p_1HOmvJr1p9dhFlb2g_zMA957jI" }
+          const res = await fetch((anyMeta.env?.VITE_SUPABASE_URL || "https://krvlckokabfhivmegukb.supabase.co") + "/rest/v1/", {
+            headers: { apikey: anyMeta.env?.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtydmxja29rYWJmaGl2bWVndWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODkyODcsImV4cCI6MjA5OTg2NTI4N30.-wl0k_-Iq_WjQUPKi35ttuuY5ybsQdvGVbDH42RGQv4" }
           });
           latency = Math.round(performance.now() - start);
           if (res.status === 200 || res.status === 401 || res.status === 400 || res.ok) {
@@ -574,7 +574,7 @@ CREATE TRIGGER trg_audit_settlements
         }
       } else if (tid === "sb-jwt") {
         const anyMeta = import.meta as any;
-        const key = anyMeta.env?.VITE_SUPABASE_ANON_KEY || "sb_publishable_935p_1HOmvJr1p9dhFlb2g_zMA957jI";
+        const key = anyMeta.env?.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtydmxja29rYWJmaGl2bWVndWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODkyODcsImV4cCI6MjA5OTg2NTI4N30.-wl0k_-Iq_WjQUPKi35ttuuY5ybsQdvGVbDH42RGQv4";
         if (key && (key.startsWith("sb_publishable") || key.length > 20)) {
           msg = "JWT token structure matches public standard.";
         } else {
@@ -734,7 +734,7 @@ CREATE TRIGGER trg_audit_settlements
     return `# IDLI JUNCTION POS SUITE - PRODUCTION READY VERIFICATION REPORT
 Generated on: ${new Date().toLocaleString()}
 Local Environment: Development / Production Server Ready
-Supabase URL Target: https://uhvxkulqovkasewxfais.supabase.co
+Supabase URL Target: ${anyMeta.env?.VITE_SUPABASE_URL || "https://krvlckokabfhivmegukb.supabase.co"}
 Production Readiness Score: ${readinessScore || 100}%
 
 =========================================
@@ -795,9 +795,9 @@ VERIFIED AND APPROVED BY: AI Coding Agent & POS QA Automation Suite
     const anyMeta = import.meta as any;
     try {
       addLog("network", "Pinging Supabase REST schema boundary...");
-      const res = await fetch("https://uhvxkulqovkasewxfais.supabase.co/rest/v1/", {
+      const res = await fetch((anyMeta.env?.VITE_SUPABASE_URL || "https://krvlckokabfhivmegukb.supabase.co") + "/rest/v1/", {
         headers: {
-          apikey: anyMeta.env?.VITE_SUPABASE_ANON_KEY || "sb_publishable_935p_1HOmvJr1p9dhFlb2g_zMA957jI",
+          apikey: anyMeta.env?.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtydmxja29rYWJmaGl2bWVndWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODkyODcsImV4cCI6MjA5OTg2NTI4N30.-wl0k_-Iq_WjQUPKi35ttuuY5ybsQdvGVbDH42RGQv4",
         },
       });
       setReachabilityCode(res.status);
@@ -892,7 +892,7 @@ VERIFIED AND APPROVED BY: AI Coding Agent & POS QA Automation Suite
   }, []);
 
   const anyMeta = import.meta as any;
-  const anonKey = anyMeta.env?.VITE_SUPABASE_ANON_KEY || "sb_publishable_935p_1HOmvJr1p9dhFlb2g_zMA957jI";
+  const anonKey = anyMeta.env?.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtydmxja29rYWJmaGl2bWVndWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODkyODcsImV4cCI6MjA5OTg2NTI4N30.-wl0k_-Iq_WjQUPKi35ttuuY5ybsQdvGVbDH42RGQv4";
   const maskedAnonKey = anonKey
     ? `${anonKey.substring(0, 10)}...${anonKey.substring(anonKey.length - 8)}`
     : "NOT SET";
@@ -938,7 +938,7 @@ VERIFIED AND APPROVED BY: AI Coding Agent & POS QA Automation Suite
             <div className="flex flex-col gap-0.5">
               <span className="text-[9px] text-stone-400 uppercase">Provider Service Host</span>
               <span className="text-stone-800 break-all bg-stone-50 p-1.5 rounded select-all text-[10px]">
-                https://uhvxkulqovkasewxfais.supabase.co
+                {anyMeta.env?.VITE_SUPABASE_URL || "https://krvlckokabfhivmegukb.supabase.co"}
               </span>
             </div>
             <div className="flex justify-between py-1 border-b border-stone-50">

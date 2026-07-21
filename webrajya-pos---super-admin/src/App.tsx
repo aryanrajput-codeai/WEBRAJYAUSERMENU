@@ -28,6 +28,7 @@ import ProfileView from './components/ProfileView';
 // Services & Store
 import { dbStore } from './utils/mockData';
 import { supabaseService, isSupabaseConfigured } from './supabase';
+import { fetchRestaurants } from './supabaseDb';
 import { Restaurant, RestaurantStatus, SubscriptionPlanTier, TicketStatus, GlobalSettings } from './types';
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     return localStorage.getItem('wr_is_logged_in') === 'true';
   });
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [authEmail, setAuthEmail] = useState<string>('');
   const [authPassword, setAuthPassword] = useState<string>('');
   const [authError, setAuthError] = useState<string | null>(null);
@@ -81,12 +83,20 @@ export default function App() {
 
   // Load from database store on start
   useEffect(() => {
-    setRestaurants([...dbStore.restaurants]);
-    setPayments([...dbStore.payments as any]);
-    setTickets([...dbStore.tickets as any]);
-    setBranches([...dbStore.branches as any]);
-    setLogs([...dbStore.logs as any]);
-    setSettings({ ...dbStore.settings });
+    async function loadLiveData() {
+      if (isSupabaseConfigured) {
+        const liveRestaurants = await fetchRestaurants();
+        setRestaurants(liveRestaurants);
+      } else {
+        setRestaurants([...dbStore.restaurants]);
+      }
+      setPayments([...dbStore.payments as any]);
+      setTickets([...dbStore.tickets as any]);
+      setBranches([...dbStore.branches as any]);
+      setLogs([...dbStore.logs as any]);
+      setSettings({ ...dbStore.settings });
+    }
+    loadLiveData();
   }, []);
 
   // Update localStorage session helpers
@@ -106,6 +116,7 @@ export default function App() {
       return;
     }
 
+    setIsLoggingIn(true);
     try {
       const res = await supabaseService.login(authEmail);
       if (res.success) {
@@ -120,6 +131,8 @@ export default function App() {
       }
     } catch (err: any) {
       setAuthError(err.message || 'Authentication handshaking failed.');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -130,11 +143,11 @@ export default function App() {
   };
 
   // HANDLERS FOR CASCAED DATABASE MUTATIONS (Pushed into dbStore)
-  const handleCreateRestaurant = (data: any) => {
-    const res = dbStore.createRestaurantTransaction(data);
-    if (res.success && res.restaurant) {
-      // Refresh React State from store
-      setRestaurants([...dbStore.restaurants]);
+  const handleCreateRestaurant = async (data: any) => {
+    const res = await dbStore.createRestaurantTransaction(data);
+    if (res.success) {
+      const liveRestaurants = await fetchRestaurants();
+      setRestaurants(liveRestaurants);
       setBranches([...dbStore.branches as any]);
       setPayments([...dbStore.payments as any]);
       setLogs([...dbStore.logs as any]);
@@ -304,9 +317,10 @@ export default function App() {
                 <button
                   id="btn-login-submit"
                   type="submit"
-                  className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-indigo-600/15 hover:shadow-indigo-600/25 cursor-pointer flex items-center justify-center space-x-2 text-sm mt-2"
+                  disabled={isLoggingIn}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-indigo-600/15 hover:shadow-indigo-600/25 cursor-pointer flex items-center justify-center space-x-2 text-sm mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span>Authenticate Session</span>
+                  <span>{isLoggingIn ? 'Authenticating...' : 'Authenticate Session'}</span>
                   <ArrowRight className="w-4.5 h-4.5" />
                 </button>
               </form>
@@ -374,7 +388,7 @@ export default function App() {
                   transition={{ duration: 0.15 }}
                 >
                   {selectedRestaurantId ? (
-                    <RestaurantDetailsView
+                    <RestaurantDetailsView 
                       restaurantId={selectedRestaurantId}
                       restaurants={restaurants}
                       payments={payments}
@@ -385,7 +399,7 @@ export default function App() {
                   ) : (
                     <>
                       {activeTab === 'dashboard' && (
-                        <DashboardView
+                        <DashboardView 
                           restaurants={restaurants}
                           payments={payments}
                           logs={logs}
@@ -395,7 +409,7 @@ export default function App() {
                       )}
 
                       {activeTab === 'restaurants' && (
-                        <RestaurantsView
+                        <RestaurantsView 
                           restaurants={restaurants}
                           onSelectRestaurant={handleSelectRestaurant}
                           onUpdateStatus={handleUpdateStatus}
@@ -408,14 +422,14 @@ export default function App() {
                       )}
 
                       {activeTab === 'subscriptions' && (
-                        <SubscriptionsView
+                        <SubscriptionsView 
                           plans={settings.plans}
                           payments={payments}
                         />
                       )}
 
                       {activeTab === 'payments' && (
-                        <PaymentsView
+                        <PaymentsView 
                           payments={payments}
                           onRefundPayment={(id) => {
                             dbStore.updateRestaurantStatus(id, 'suspended'); // Suspend on refund
@@ -426,14 +440,14 @@ export default function App() {
                       )}
 
                       {activeTab === 'analytics' && (
-                        <AnalyticsView
+                        <AnalyticsView 
                           restaurants={restaurants}
                           payments={payments}
                         />
                       )}
 
                       {activeTab === 'support' && (
-                        <SupportView
+                        <SupportView 
                           tickets={tickets}
                           onReplyTicket={handleReplyTicket}
                           onUpdateTicketStatus={handleUpdateTicketStatus}
@@ -441,7 +455,7 @@ export default function App() {
                       )}
 
                       {activeTab === 'settings' && (
-                        <SettingsView
+                        <SettingsView 
                           settings={settings}
                           onUpdateSettings={handleUpdateSettings}
                           onClearAllData={handleClearAllData}
@@ -449,7 +463,7 @@ export default function App() {
                       )}
 
                       {activeTab === 'profile' && (
-                        <ProfileView
+                        <ProfileView 
                           adminName={adminUser.name}
                           adminEmail={adminUser.email}
                           onUpdateName={(name) => {
@@ -470,7 +484,7 @@ export default function App() {
           {/* 3. MULTI-STEP CREATOR WIZARD OVERLAY */}
           <AnimatePresence>
             {isWizardOpen && (
-              <AddRestaurantWizard
+              <AddRestaurantWizard 
                 onClose={() => setIsWizardOpen(false)}
                 onSubmit={handleCreateRestaurant}
               />

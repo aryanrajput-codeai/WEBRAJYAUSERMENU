@@ -19,8 +19,21 @@ const dummyChain: any = {
   then: (resolve: any) => resolve({ data: [], error: null }),
 };
 
-const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || "";
-const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || "";
+const rawSupabaseUrl = ((import.meta as any).env.VITE_SUPABASE_URL || "").trim();
+const supabaseAnonKey = ((import.meta as any).env.VITE_SUPABASE_ANON_KEY || "").trim();
+
+// Strip any trailing slashes or path suffixes (/rest/v1, /auth/v1) accidentally included in env variables
+const cleanSupabaseUrl = (url: string): string => {
+  if (!url) return "";
+  try {
+    const parsed = new URL(url);
+    return parsed.origin;
+  } catch {
+    return url.replace(/\/rest\/v1\/?$/i, "").replace(/\/auth\/v1\/?$/i, "").replace(/\/+$/, "");
+  }
+};
+
+const supabaseUrl = cleanSupabaseUrl(rawSupabaseUrl);
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 

@@ -11,10 +11,10 @@ dotenv.config();
   }
 };
 
-import { onboardRestaurantTransaction } from "../webrajya-pos---super-admin/src/supabaseDb";
+import { onboardRestaurantTransaction, OnboardingData } from "../webrajya-pos---super-admin/src/supabaseDb";
 
 async function runOnboarding() {
-  const onboardingData = {
+  const onboardingData: OnboardingData = {
     name: "Test Restaurant",
     ownerName: "John Smith",
     email: "john@testrestaurant.com",

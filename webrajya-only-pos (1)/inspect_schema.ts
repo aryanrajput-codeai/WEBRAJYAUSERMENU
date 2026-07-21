@@ -10,6 +10,9 @@ async function inspectTable(table: string, columns: string[]) {
   console.log(`\n=== ${table} ===`);
   for (const col of columns) {
     const { error } = await sb.from(table).select(col).limit(1);
+    if (error) {
+      console.log(`  ERROR for ${col}:`, error.message, error.code, error.details);
+    }
     if (error?.message?.includes(`Could not find the '${col}'`) || error?.message?.includes(`column "${col}"`)) {
       console.log(`  MISSING: ${col}`);
     } else {
