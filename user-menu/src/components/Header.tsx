@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Search, Sparkles, Flame, Check, ThumbsUp, Leaf } from "lucide-react";
 import { motion } from "motion/react";
+import { categories } from "../data";
 import { Category } from "../types";
 
 interface HeaderProps {
@@ -12,7 +13,6 @@ interface HeaderProps {
   onVegOnlyChange: (show: boolean) => void;
   showBestsellersOnly: boolean;
   onBestsellersChange: (show: boolean) => void;
-  categories?: Category[];
 }
 
 export default function Header({
@@ -23,8 +23,7 @@ export default function Header({
   showVegOnly,
   onVegOnlyChange,
   showBestsellersOnly,
-  onBestsellersChange,
-  categories = []
+  onBestsellersChange
 }: HeaderProps) {
   const [searchValue, setSearchValue] = useState("");
 
@@ -70,7 +69,7 @@ export default function Header({
             className="flex items-center justify-center gap-2 mb-3"
           >
             <span className="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent to-[#d4af37]" />
-            <span className="text-[#d4af37] font-serif tracking-[0.25em] text-xs sm:text-sm uppercase font-semibold">ESTABLISHED 2004</span>
+            <span className="text-[#d4af37] font-serif tracking-[0.25em] text-xs sm:text-sm uppercase font-semibold">ESTABLISHED 2018</span>
             <span className="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent to-[#d4af37]" />
           </motion.div>
 
@@ -83,7 +82,7 @@ export default function Header({
           >
             WebRajya POS
             <span className="block mt-1 text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] via-[#f3e5ab] to-[#aa7c11] text-3xl sm:text-5xl md:text-6xl font-medium">
-              Restaurant
+              QR Menu
             </span>
           </motion.h1>
 
@@ -93,10 +92,10 @@ export default function Header({
             transition={{ duration: 1, delay: 0.4 }}
             className="mt-4 text-gray-300 font-sans tracking-wide text-sm sm:text-lg italic font-light"
           >
-            &ldquo;WebRajya's Most Delicious Dishes Starting at Just ₹10&rdquo;
+            &ldquo;Smart Interactive Ordering & Seamless Operations&rdquo;
           </motion.p>
 
-          {/* Delivery Partner Buttons */}
+          {/* WebRajya CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -104,22 +103,19 @@ export default function Header({
             className="mt-5 flex flex-wrap items-center justify-center gap-3"
           >
             <a
-              href="https://www.swiggy.com/search?query=WebRajya+POS+Nagpur"
+              href="https://webrajya.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2.5 bg-[#FC8019] hover:bg-[#fc8019]/90 text-white font-sans text-xs sm:text-sm font-bold rounded-xl shadow-lg transition-all duration-200 flex items-center gap-2 hover:scale-105 focus:outline-none"
+              className="px-5 py-2.5 bg-[#d4af37] hover:bg-[#d4af37]/90 text-stone-950 font-sans text-xs sm:text-sm font-bold rounded-xl shadow-lg transition-all duration-200 flex items-center gap-2 hover:scale-105 focus:outline-none"
             >
-              <span className="inline-block w-2 h-2 rounded-full bg-white animate-pulse" />
-              Order on Swiggy
+              <span className="inline-block w-2 h-2 rounded-full bg-stone-950 animate-pulse" />
+              Explore WebRajya POS
             </a>
             <a
-              href="https://www.zomato.com/nagpur/webrajya-pos"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-2.5 bg-[#CB202D] hover:bg-[#cb202d]/90 text-white font-sans text-xs sm:text-sm font-bold rounded-xl shadow-lg transition-all duration-200 flex items-center gap-2 hover:scale-105 focus:outline-none"
+              href="mailto:contact@webrajya.com"
+              className="px-5 py-2.5 bg-stone-900 hover:bg-stone-850 border border-stone-800 text-white font-sans text-xs sm:text-sm font-bold rounded-xl shadow-lg transition-all duration-200 flex items-center gap-2 hover:scale-105 focus:outline-none"
             >
-              <span className="inline-block w-2 h-2 rounded-full bg-white animate-pulse" />
-              Order on Zomato
+              Request a Demo
             </a>
           </motion.div>
 

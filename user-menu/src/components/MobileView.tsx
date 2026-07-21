@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { MenuItem, CartItem, Category } from "../types";
+import { categories as defaultCategories } from "../data";
 import { LocalDB } from "../lib/db";
 import TableFloorplan from "./TableFloorplan";
 
@@ -299,7 +300,7 @@ export default function MobileView({
       const orderData = {
         customerName: userName.trim(),
         phoneNumber: phoneNumber.trim() || "+91-11-4560-4560",
-        email: `${userName.toLowerCase().trim().replace(/\s+/g, "")}@webrajyapos-guest.com`,
+        email: `${userName.toLowerCase().trim().replace(/\s+/g, "")}@webrajya-guest.com`,
         orderType: orderType,
         tableNumber: orderType === "dine-in" ? tableNumber : undefined,
         address: orderType === "delivery" ? address : undefined,
@@ -347,12 +348,12 @@ export default function MobileView({
       className="bg-[#FAF9F5] text-stone-850 min-h-screen min-h-dvh flex flex-col font-sans select-none antialiased relative pb-24"
       id="mobile-viewport"
     >
-      {/* 100% Pure Veg Top Pill banner / Status bar */}
+      {/* WebRajya POS Top Pill banner / Status bar */}
       <div className="bg-stone-900 text-[10px] font-mono font-medium text-[#d4af37] border-b border-[#d4af37]/10 py-2.5 text-center tracking-wider uppercase flex items-center justify-center gap-1.5 px-4 sticky top-0 z-40">
         <Sparkles className="w-3.5 h-3.5 text-[#d4af37] animate-pulse" />
-        <span>100% Pure Vegetarian WebRajya POS</span>
+        <span>WebRajya Smart POS QR Menu Demo</span>
         <span>•</span>
-        <span className="text-white font-sans">Delivering Pure Memories</span>
+        <span className="text-white font-sans">Premium Digital Dining</span>
       </div>
 
       {animateContainer(isLoading, activeTab, {
@@ -373,34 +374,34 @@ export default function MobileView({
               <div className="absolute top-4 left-4 flex gap-2">
                 <div className="bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full border border-gray-800 text-[10px] font-semibold text-amber-400 flex items-center gap-1 shadow-lg">
                   <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                  <span>4.8 Rating</span>
+                  <span>4.9 Rating</span>
                 </div>
                 <div className="bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full border border-gray-800 text-[10px] font-semibold text-white flex items-center gap-1 shadow-lg">
                   <Clock className="w-3 h-3 text-[#d4af37]" />
-                  <span>25-35 Mins</span>
+                  <span>Speedy Checkout</span>
                 </div>
               </div>
 
               {/* Logo icon representation */}
               <div className="absolute top-4 right-4 bg-black/85 backdrop-blur-md p-2 rounded-2xl border border-gray-800/80 shadow-md">
                 <span className="text-sm font-serif font-extrabold text-[#d4af37]">
-                  SR
+                  WR
                 </span>
               </div>
 
               {/* Hero Content Bottom */}
               <div className="absolute bottom-6 left-6 right-6 space-y-3">
                 <span className="text-[10px] font-mono tracking-[0.25em] text-[#d4af37] uppercase font-bold">
-                  ESTD 2004 • NEW DELHI
+                  POWERED BY WEBRAJYA
                 </span>
                 <h1 className="text-3xl font-serif font-extrabold text-white leading-tight tracking-wide">
                   WebRajya POS
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f3e5ab] text-xl font-medium mt-0.5">
-                    Premium Vegetarian Dining
+                    Interactive QR Menu Solutions
                   </span>
                 </h1>
                 <p className="text-xs text-gray-300 font-sans tracking-wide italic font-light opacity-90">
-                  &ldquo;Taste That Brings You Back&rdquo;
+                  &ldquo;Smart Solutions for Modern Dining&rdquo;
                 </p>
 
                 {/* Floating Action Button */}
@@ -1492,7 +1493,7 @@ export default function MobileView({
                   style={{ border: 0 }}
                   allowFullScreen={true}
                   loading="lazy"
-                  title="WebRajya POS Restaurant Location Map"
+                  title="WebRajya POS Solutions Location Map"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="opacity-90 focus:outline-none"
                 ></iframe>

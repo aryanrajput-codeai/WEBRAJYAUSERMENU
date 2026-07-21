@@ -1,0 +1,8 @@
+{
+  "name": "WebRajya POS QR Menu",
+  "description": "Premium interactive digital dining and QR ordering system powered by WebRajya POS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
