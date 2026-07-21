@@ -663,9 +663,10 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       // safe fallback
     }
     try {
-      setCategoriesList(LocalDB.getCategories());
+      const cats = await LocalDB.fetchCategories();
+      setCategoriesList(cats);
     } catch (_) {
-      // safe fallback
+      setCategoriesList(LocalDB.getCategories());
     }
   };
 

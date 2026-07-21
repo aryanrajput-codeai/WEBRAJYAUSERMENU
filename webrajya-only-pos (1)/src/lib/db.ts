@@ -520,6 +520,30 @@ export class LocalDB {
     window.dispatchEvent(new Event("storage"));
   }
 
+  static async fetchCategories(): Promise<Category[]> {
+    const restaurantId = getSessionRestaurantId() || LocalDB.getValidRestaurantId();
+    try {
+      let query = supabase.from("categories").select("*");
+      if (restaurantId) {
+        query = query.eq("restaurant_id", restaurantId);
+      }
+      const { data, error } = await query.order("display_order", { ascending: true });
+      if (error || !data || data.length === 0) {
+        return this.getCategories();
+      }
+      const mapped: Category[] = data.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        icon: "Utensils",
+        description: `Gourmet ${c.name} selections`
+      }));
+      this.saveCategories(mapped);
+      return mapped;
+    } catch (_) {
+      return this.getCategories();
+    }
+  }
+
   static getCategories(): Category[] {
     const stored = localStorage.getItem("ij_categories");
     if (!stored) {
@@ -1108,7 +1132,63 @@ export class LocalDB {
   }
 
   static async fetchMenuItems(): Promise<MenuItem[]> {
-    return this.getMenuItems();
+    console.log("[Supabase API] Fetching live menu items from public.menu_items...");
+    const restaurantId = getSessionRestaurantId() || LocalDB.getValidRestaurantId();
+
+    try {
+      let query = supabase.from("menu_items").select("*");
+      if (restaurantId) {
+        query = query.eq("restaurant_id", restaurantId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.warn("[Supabase API Warning] fetchMenuItems error, using local cache:", error.message);
+        return this.getMenuItems();
+      }
+
+      if (!data || data.length === 0) {
+        console.log("[Supabase API] No items found in DB for restaurant:", restaurantId);
+        // If restaurant filter returned empty, try fetching all menu_items as fallback
+        const { data: allData } = await supabase.from("menu_items").select("*").limit(100);
+        if (allData && allData.length > 0) {
+          const mappedFallback: MenuItem[] = allData.map((item: any) => this.mapDatabaseMenuItemToApp(item));
+          this.saveMenuItems(mappedFallback);
+          return mappedFallback;
+        }
+        return this.getMenuItems();
+      }
+
+      const mapped: MenuItem[] = data.map((item: any) => this.mapDatabaseMenuItemToApp(item));
+      console.log(`[Supabase API] Successfully loaded ${mapped.length} live menu items from database.`);
+      this.saveMenuItems(mapped);
+      return mapped;
+    } catch (err: any) {
+      console.error("[Supabase API Error] fetchMenuItems exception:", err);
+      return this.getMenuItems();
+    }
+  }
+
+  static mapDatabaseMenuItemToApp(item: any): MenuItem {
+    return {
+      id: String(item.id),
+      itemCode: item.hsn_code || item.item_code || String(item.id).substring(0, 6),
+      category: item.category || "General",
+      name: item.name || "Unnamed Item",
+      description: item.description || "",
+      price: Number(item.price) || 0,
+      isVeg: item.veg !== false,
+      imageUrl: item.image_url || "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=60",
+      rating: 4.8,
+      ratingCount: 120,
+      isBestseller: Boolean(item.best_seller),
+      isChefSpecial: Boolean(item.chef_special),
+      spiciness: 1,
+      gstPercent: Number(item.gst_percentage || 5),
+      hsnCode: item.hsn_code || "",
+      available: item.available !== false
+    };
   }
 
   static async apiSaveMenuItems(items: MenuItem[]): Promise<void> {
