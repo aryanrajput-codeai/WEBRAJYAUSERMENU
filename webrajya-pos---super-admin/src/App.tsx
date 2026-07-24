@@ -28,7 +28,7 @@ import ProfileView from './components/ProfileView';
 // Services & Store
 import { dbStore } from './utils/mockData';
 import { supabaseService, isSupabaseConfigured } from './supabase';
-import { fetchRestaurants } from './supabaseDb';
+import { fetchRestaurants, onboardRestaurantTransaction } from './supabaseDb';
 import { Restaurant, RestaurantStatus, SubscriptionPlanTier, TicketStatus, GlobalSettings } from './types';
 
 export default function App() {
@@ -144,7 +144,9 @@ export default function App() {
 
   // HANDLERS FOR CASCAED DATABASE MUTATIONS (Pushed into dbStore)
   const handleCreateRestaurant = async (data: any) => {
-    const res = await dbStore.createRestaurantTransaction(data);
+    const res = isSupabaseConfigured
+      ? await onboardRestaurantTransaction(data)
+      : await dbStore.createRestaurantTransaction(data);
     if (res.success) {
       const liveRestaurants = await fetchRestaurants();
       setRestaurants(liveRestaurants);
